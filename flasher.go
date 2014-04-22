@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/codegangsta/cli"
 	"log"
 	"os"
@@ -39,6 +38,6 @@ func cliFlash(c *cli.Context) {
 
 	// Test that everything was read in correctly
 	for _, card := range inputFlashcardStack.Flashcards {
-		fmt.Printf("%s\n%s\n\n", card.Question, card.Answer)
+		card.showCard()
 	}
 }
