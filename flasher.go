@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"github.com/codegangsta/cli"
+	"log"
 	"os"
 )
 
@@ -24,4 +26,19 @@ func main() {
 }
 
 func cliFlash(c *cli.Context) {
+	if len(c.Args()) != 1 {
+		log.Fatal("Incorrect usage. Too few/many arguments") // Useless message, will update
+	}
+
+	inputFlashcardStack := new(cardStack)
+	err := inputFlashcardStack.loadFlashcardStack(c.Args().First())
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Test that everything was read in correctly
+	for _, card := range inputFlashcardStack.Flashcards {
+		fmt.Printf("%s\n%s\n\n", card.Question, card.Answer)
+	}
 }
