@@ -19,6 +19,12 @@ func main() {
 			ShortName: "f",
 			Usage:     "flasher flash [flashcard-file.json]",
 			Action:    cliFlash,
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "no-shuffle, n",
+					Usage: "Presents flashcards in the order they are written in the source JSON file.",
+				},
+			},
 		},
 	}
 	app.Run(os.Args)
@@ -34,6 +40,10 @@ func cliFlash(c *cli.Context) {
 
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	if !c.Bool("no-shuffle") {
+		inputFlashcardStack.shuffle()
 	}
 
 	// Test that everything was read in correctly
