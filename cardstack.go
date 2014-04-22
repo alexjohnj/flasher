@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"io/ioutil"
+	"math/rand"
+	"time"
 )
 
 type cardStack struct {
@@ -26,4 +28,14 @@ func (stack *cardStack) loadFlashcardStack(filename string) error {
 		return err
 	}
 	return nil
+}
+
+// Shuffles a cardStack's Flashcards in place using a Fisher-Yates shuffle
+func (stack *cardStack) shuffle() {
+	rand.Seed(time.Now().UnixNano())
+
+	for i := len(stack.Flashcards) - 1; i > 0; i-- {
+		j := rand.Intn(i)
+		stack.Flashcards[i], stack.Flashcards[j] = stack.Flashcards[j], stack.Flashcards[i]
+	}
 }
