@@ -32,7 +32,9 @@ func main() {
 
 func cliFlash(c *cli.Context) {
 	if len(c.Args()) != 1 {
-		log.Fatal("Incorrect usage. Too few/many arguments") // Useless message, will update
+		log.Print("Incorrect usage")
+		cli.ShowCommandHelp(c, "flash")
+		os.Exit(1)
 	}
 
 	inputFlashcardStack := new(cardStack)
