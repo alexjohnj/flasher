@@ -50,6 +50,7 @@ func cliFlash(c *cli.Context) {
 
 	// Test that everything was read in correctly
 	for _, card := range inputFlashcardStack.Flashcards {
+		card.formatCard()
 		card.showCard()
 	}
 }
