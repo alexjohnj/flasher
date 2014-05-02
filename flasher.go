@@ -2,7 +2,8 @@ package main
 
 import (
 	"github.com/codegangsta/cli"
-	"log"
+	"github.com/nsf/termbox-go"
+	"math"
 	"os"
 )
 
@@ -31,26 +32,57 @@ func main() {
 }
 
 func cliFlash(c *cli.Context) {
-	if len(c.Args()) != 1 {
-		log.Print("Incorrect usage")
-		cli.ShowCommandHelp(c, "flash")
-		os.Exit(1)
-	}
-
-	inputFlashcardStack := new(cardStack)
-	err := inputFlashcardStack.loadFlashcardStack(c.Args().First())
-
+	// Init termbox
+	err := termbox.Init()
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
+	}
+	defer termbox.Close()
+
+	draw()
+
+	// Run loop
+mainloop:
+	for {
+		switch event := termbox.PollEvent(); event.Type {
+		case termbox.EventKey:
+			switch event.Key {
+			case termbox.KeyEsc:
+				break mainloop
+			}
+		case termbox.EventResize:
+			draw()
+		}
+		draw()
+	}
+}
+
+func draw() {
+	w, h := termbox.Size()
+	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
+
+	// Draw termbox border
+	termbox.SetCell(0, 0, '+', termbox.ColorDefault, termbox.ColorDefault)
+	termbox.SetCell(w-1, 0, '+', termbox.ColorDefault, termbox.ColorDefault)
+	termbox.SetCell(0, h-1, '+', termbox.ColorDefault, termbox.ColorDefault)
+	termbox.SetCell(w-1, h-1, '+', termbox.ColorDefault, termbox.ColorDefault)
+
+	for x := 1; x < w-1; x++ {
+		termbox.SetCell(x, 0, '-', termbox.ColorDefault, termbox.ColorDefault)
+		termbox.SetCell(x, h-1, '-', termbox.ColorDefault, termbox.ColorDefault)
 	}
 
-	if !c.Bool("no-shuffle") {
-		inputFlashcardStack.shuffle()
+	for y := 1; y < h-1; y++ {
+		termbox.SetCell(0, y, '|', termbox.ColorDefault, termbox.ColorDefault)
+		termbox.SetCell(w-1, y, '|', termbox.ColorDefault, termbox.ColorDefault)
 	}
 
-	// Test that everything was read in correctly
-	for _, card := range inputFlashcardStack.Flashcards {
-		card.formatCard()
-		card.showCard()
+	// Draw a string in the ~centre of the termbox
+	message := "Flasher will flash soon!"
+	xStart := (w / 2) - int(math.Floor(float64(len(message)/2)))
+	for index, runeVal := range message {
+		termbox.SetCell(xStart+index, h/2, runeVal, termbox.ColorGreen, termbox.ColorDefault)
 	}
+
+	termbox.Flush()
 }
