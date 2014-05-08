@@ -107,11 +107,15 @@ func drawAll(stack *cardStack) {
 	currentQuestion.drawQuestion()
 	if stack.ShowAnswer {
 		currentQuestion.drawAnswer()
+		// Draw the Q/A divider
+		for x := 0; x < w; x++ {
+			termbox.SetCell(x, (3 * h / 8), '-', termbox.ColorBlue, termbox.ColorDefault)
+		}
 	}
 
 	// Draw the current index
-	indexXCoord, indexYCoord := 1, h-2
-	indexStr := fmt.Sprintf("%d/%d", stack.StackIndex+1, len(stack.Flashcards))
+	indexStr := fmt.Sprintf("(%d/%d)", stack.StackIndex+1, len(stack.Flashcards))
+	indexXCoord, indexYCoord := tbutils.CalculateXCenterCoord(indexStr), h-1
 	tbutils.DrawText(indexXCoord, indexYCoord, indexStr)
 
 	// Write out the back buffer
