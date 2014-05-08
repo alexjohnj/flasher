@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
+	"github.com/alexjohnj/flasher/tbutils"
 	"github.com/codegangsta/cli"
 	"github.com/nsf/termbox-go"
-	"math"
+	"log"
 	"os"
 )
 
@@ -32,34 +34,58 @@ func main() {
 }
 
 func cliFlash(c *cli.Context) {
+	// Load flashcards
+
+	if len(c.Args()) != 1 {
+		log.Printf("Incorrect usage\n")
+		cli.ShowCommandHelp(c, "flash")
+		os.Exit(1)
+	}
+
+	flashcardStack := new(cardStack)
+	err := flashcardStack.loadFlashcardStack(c.Args()[0])
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if !c.Bool("no-shuffle") {
+		flashcardStack.shuffle()
+	}
+
 	// Init termbox
-	err := termbox.Init()
+	err = termbox.Init()
 	if err != nil {
 		panic(err)
 	}
 	defer termbox.Close()
+	drawAll(flashcardStack)
 
-	draw()
-
-	// Run loop
+	//Main Run loop
 mainloop:
 	for {
 		switch event := termbox.PollEvent(); event.Type {
 		case termbox.EventKey:
 			switch event.Key {
-			case termbox.KeyEsc:
+			case termbox.KeyEsc, termbox.KeyCtrlC:
 				break mainloop
+			case termbox.KeyEnter, termbox.KeyArrowRight:
+				flashcardStack.advanceStack()
+				drawAll(flashcardStack)
+			case termbox.KeyBackspace2, termbox.KeyArrowLeft:
+				flashcardStack.revertStack()
+				drawAll(flashcardStack)
 			}
 		case termbox.EventResize:
-			draw()
+			drawAll(flashcardStack)
 		}
-		draw()
+		drawAll(flashcardStack)
 	}
 }
 
-func draw() {
-	w, h := termbox.Size()
+func drawAll(stack *cardStack) {
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
+	w, h := termbox.Size()
 
 	// Draw termbox border
 	termbox.SetCell(0, 0, '+', termbox.ColorDefault, termbox.ColorDefault)
@@ -72,17 +98,22 @@ func draw() {
 		termbox.SetCell(x, h-1, '-', termbox.ColorDefault, termbox.ColorDefault)
 	}
 
-	for y := 1; y < h-1; y++ {
-		termbox.SetCell(0, y, '|', termbox.ColorDefault, termbox.ColorDefault)
-		termbox.SetCell(w-1, y, '|', termbox.ColorDefault, termbox.ColorDefault)
+	// Draw the Stack's title
+	titleXCoord := tbutils.CalculateXCenterCoord(stack.Title)
+	tbutils.DrawText(titleXCoord, 1, stack.Title)
+
+	// Draw the current card
+	currentQuestion := stack.getCurrentFlashcard()
+	currentQuestion.drawQuestion()
+	if stack.ShowAnswer {
+		currentQuestion.drawAnswer()
 	}
 
-	// Draw a string in the ~centre of the termbox
-	message := "Flasher will flash soon!"
-	xStart := (w / 2) - int(math.Floor(float64(len(message)/2)))
-	for index, runeVal := range message {
-		termbox.SetCell(xStart+index, h/2, runeVal, termbox.ColorGreen, termbox.ColorDefault)
-	}
+	// Draw the current index
+	indexXCoord, indexYCoord := 1, h-2
+	indexStr := fmt.Sprintf("%d/%d", stack.StackIndex+1, len(stack.Flashcards))
+	tbutils.DrawText(indexXCoord, indexYCoord, indexStr)
 
+	// Write out the back buffer
 	termbox.Flush()
 }

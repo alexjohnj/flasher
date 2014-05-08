@@ -1,10 +1,7 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
-	"os"
-	"regexp"
+	"github.com/alexjohnj/flasher/tbutils"
 )
 
 type flashcard struct {
@@ -13,23 +10,16 @@ type flashcard struct {
 	Image    string `json:"image"`
 }
 
-func (f *flashcard) showCard() {
-	fmt.Printf("Q: %s\n(Press the return key to show the answer)\n", f.Question)
-	stdinReader := bufio.NewReader(os.Stdin)
-	stdinReader.ReadByte()
-	fmt.Printf("A: %s\n\n", f.Answer)
+// drawQuestion writes the flashcard's question to the termbox's back buffer.
+// It does not clear the display or flush the buffer
+func (f *flashcard) drawQuestion() {
+	xCoord := tbutils.CalculateXCenterCoord(f.Question)
+	tbutils.DrawText(xCoord, 10, f.Question)
 }
 
-// formatCard replaces a small subset of Markdown sequences with ANSI escape codes.
-// ** and __ get replaced with the ANSI bold sequence.
-func (f *flashcard) formatCard() {
-	// Match **$1**
-	re := regexp.MustCompile("\\*\\*(.+?)\\*\\*")
-	f.Question = re.ReplaceAllString(f.Question, "\033[1m$1\033[0m")
-	f.Answer = re.ReplaceAllString(f.Answer, "\033[1m$1\033[0m")
-
-	// Match **__$1__**
-	re = regexp.MustCompile("__(.+?)__")
-	f.Question = re.ReplaceAllString(f.Question, "\033[1m$1\033[0m")
-	f.Answer = re.ReplaceAllString(f.Answer, "\033[1m$1\033[0m")
+// drawAnswer writes the flashcard's answer to the termbox's back buffer.
+// It does not clear the display or flush the buffer.
+func (f *flashcard) drawAnswer() {
+	xCoord := tbutils.CalculateXCenterCoord(f.Answer)
+	tbutils.DrawText(xCoord, 11, f.Answer)
 }

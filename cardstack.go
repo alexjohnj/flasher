@@ -11,6 +11,41 @@ type cardStack struct {
 	Title      string      `json:"title"`
 	Author     string      `json:"Author"`
 	Flashcards []flashcard `json:flashcards`
+	ShowAnswer bool
+	StackIndex int
+}
+
+// advanceStack moves forward through the stack of flashcards.
+// If the current flashcard isn't showing an answer, it will flag it to show the answer.
+// Otherwise it will increment the StackIndex and disable the ShownAnswer flag.
+// This function will do nothing if incrementing the StackIndex would produce an OOB error.
+func (s *cardStack) advanceStack() {
+	if s.StackIndex >= len(s.Flashcards)-1 && s.ShowAnswer {
+		return
+	}
+
+	if s.ShowAnswer {
+		s.StackIndex++
+		s.ShowAnswer = false
+	} else if !s.ShowAnswer {
+		s.ShowAnswer = true
+	}
+}
+
+// revertStack is the inverse of advanceStack
+// This function will do nothing if decrementing StackIndex would produce an OOB error.
+func (s *cardStack) revertStack() {
+	if s.ShowAnswer {
+		s.ShowAnswer = false
+	} else if !s.ShowAnswer && s.StackIndex > 0 {
+		s.StackIndex--
+		s.ShowAnswer = true
+	}
+}
+
+// getCurrentFlashcard is a convenience function that returns a copy of the current flashcard.
+func (s *cardStack) getCurrentFlashcard() flashcard {
+	return s.Flashcards[s.StackIndex]
 }
 
 // loadFlashcardStack loads a json file called filename and unmarshals it into the calling struct.
