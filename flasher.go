@@ -29,6 +29,12 @@ func main() {
 				},
 			},
 		},
+		{
+			Name:      "info",
+			ShortName: "i",
+			Usage:     "flasher info [flashcard-file.json]",
+			Action:    cliInfo,
+		},
 	}
 	app.Run(os.Args)
 }
@@ -81,6 +87,23 @@ mainloop:
 		}
 		drawAll(flashcardStack)
 	}
+}
+
+func cliInfo(c *cli.Context) {
+	if len(c.Args()) != 1 {
+		log.Printf("Incorrect usage\n")
+		cli.ShowCommandHelp(c, "info")
+		os.Exit(1)
+	}
+
+	flashcardStack := new(cardStack)
+	err := flashcardStack.loadFlashcardStack(c.Args()[0])
+
+	if err != nil {
+		log.Fatalf("%s is an invalid file: %s", c.Args()[0], err.Error())
+	}
+
+	fmt.Printf("Deck Name: %s\nAuthor: %s\nNumber of Cards: %d\n", flashcardStack.Title, flashcardStack.Author, len(flashcardStack.Flashcards))
 }
 
 func drawAll(stack *cardStack) {
