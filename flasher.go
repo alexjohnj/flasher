@@ -82,6 +82,12 @@ mainloop:
 				flashcardStack.revertStack()
 				drawAll(flashcardStack)
 			}
+
+			switch event.Ch {
+			case 'q':
+				break mainloop
+			}
+
 		case termbox.EventResize:
 			drawAll(flashcardStack)
 		}
