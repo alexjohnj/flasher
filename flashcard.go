@@ -6,9 +6,9 @@ import (
 )
 
 type flashcard struct {
-	Question string `json:"question"`
-	Answer   string `json:"answer"`
-	Image    string `json:"image"`
+	Question string
+	Answer   string
+	Image    string
 }
 
 // drawQuestion writes the flashcard's question to the termbox's back buffer.
