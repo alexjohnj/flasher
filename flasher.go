@@ -86,11 +86,27 @@ mainloop:
 			switch event.Ch {
 			case 'q':
 				break mainloop
+
+			case 'r':
+				if flashcardStack.atEndOfStack() {
+					flashcardStack.StackIndex = 0
+					flashcardStack.ShowAnswer = false
+					drawAll(flashcardStack)
+				}
+
+			case 'x':
+				if flashcardStack.atEndOfStack() {
+					flashcardStack.shuffle()
+					flashcardStack.StackIndex = 0
+					flashcardStack.ShowAnswer = false
+					drawAll(flashcardStack)
+				}
 			}
 
 		case termbox.EventResize:
 			drawAll(flashcardStack)
 		}
+
 		drawAll(flashcardStack)
 	}
 }
