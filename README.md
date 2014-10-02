@@ -29,10 +29,10 @@ author = "Alex Jackson"
 
 [[flashcards]]
 question = "What is your name?"
-answer = "Arthur, King of the Britons"
+answer = "Arthur, King of the Britons."
 
 [[flashcards]]
-question = "What is your quest"
+question = "What is your quest?"
 answer = "To seek the Holy Grail."
 
 [[flashcards]]
