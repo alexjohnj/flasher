@@ -87,6 +87,14 @@ mainloop:
 			case 'q':
 				break mainloop
 
+			case 'l':
+				flashcardStack.advanceStack()
+				drawAll(flashcardStack)
+
+			case 'h':
+				flashcardStack.revertStack()
+				drawAll(flashcardStack)
+
 			case 'r':
 				if flashcardStack.atEndOfStack() {
 					flashcardStack.StackIndex = 0
