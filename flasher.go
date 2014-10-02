@@ -12,7 +12,7 @@ import (
 func main() {
 	app := cli.NewApp()
 	app.Name = "flasher"
-	app.Version = "0.3.0-DEV"
+	app.Version = "0.3.0"
 	app.Author = "Alex Jackson"
 	app.Email = "alex@alexj.org"
 
