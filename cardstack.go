@@ -47,6 +47,10 @@ func (s *cardStack) getCurrentFlashcard() flashcard {
 	return s.Flashcards[s.StackIndex]
 }
 
+func (s *cardStack) atEndOfStack() bool {
+	return s.StackIndex+1 == len(s.Flashcards) && s.ShowAnswer
+}
+
 // loadFlashcardStack loads a json file called filename and unmarshals it into the calling struct.
 // If there is an error reading the file or unmarshaling it, the error will be returned.
 func (stack *cardStack) loadFlashcardStack(filename string) error {

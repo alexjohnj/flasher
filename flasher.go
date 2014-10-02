@@ -115,7 +115,6 @@ func cliInfo(c *cli.Context) {
 func drawAll(stack *cardStack) {
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 	w, h := termbox.Size()
-	endOfStack := stack.StackIndex+1 == len(stack.Flashcards) && stack.ShowAnswer
 
 	// Draw termbox border
 	termbox.SetCell(0, 0, '+', termbox.ColorDefault, termbox.ColorDefault)
@@ -144,7 +143,7 @@ func drawAll(stack *cardStack) {
 	}
 
 	// Draw end of stack message
-	if endOfStack {
+	if stack.atEndOfStack() {
 		endOfStackMessageLine1 := "End of Stack..."
 		endOfStackMessageLine2 := "(q)Quit (r)Restart (x)Reshuffle & Restart."
 		eosXCoord1, eosYCoord1 := tbutils.CalculateXCenterCoord(endOfStackMessageLine1), (3 * (h / 4))
