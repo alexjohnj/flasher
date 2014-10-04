@@ -11,7 +11,7 @@ import (
 func main() {
 	app := cli.NewApp()
 	app.Name = "flasher"
-	app.Version = "0.3.0"
+	app.Version = "0.3.1-DEV"
 	app.Author = "Alex Jackson"
 	app.Email = "alex@alexj.org"
 
@@ -64,7 +64,7 @@ func cliFlash(c *cli.Context) {
 		panic(err)
 	}
 	defer termbox.Close()
-	drawAll(flashcardStack)
+	drawAll(c, flashcardStack)
 
 	//Main Run loop
 mainloop:
@@ -105,10 +105,10 @@ mainloop:
 			}
 
 		case termbox.EventResize:
-			drawAll(flashcardStack)
+			drawAll(c, flashcardStack)
 		}
 
-		drawAll(flashcardStack)
+		drawAll(c, flashcardStack)
 	}
 }
 
