@@ -136,24 +136,28 @@ func cliInfo(c *cli.Context) {
 	fmt.Printf("Deck Name: %s\nAuthor: %s\nNumber of Cards: %d\n", flashcardStack.Title, flashcardStack.Author, len(flashcardStack.Flashcards))
 }
 
+// TODO: Break up mega function
 func drawAll(stack *cardStack) {
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 	w, h := termbox.Size()
 
 	// Draw termbox border
-	termbox.SetCell(0, 0, '+', termbox.ColorDefault, termbox.ColorDefault)
-	termbox.SetCell(w-1, 0, '+', termbox.ColorDefault, termbox.ColorDefault)
-	termbox.SetCell(0, h-1, '+', termbox.ColorDefault, termbox.ColorDefault)
-	termbox.SetCell(w-1, h-1, '+', termbox.ColorDefault, termbox.ColorDefault)
+	for x := 0; x <= w; x++ {
+		termbox.SetCell(0+x, 0, ' ', termbox.ColorBlack, termbox.ColorWhite)
+		termbox.SetCell(0+x, h, ' ', termbox.ColorBlack, termbox.ColorWhite)
+	}
 
-	for x := 1; x < w-1; x++ {
-		termbox.SetCell(x, 0, '-', termbox.ColorDefault, termbox.ColorDefault)
-		termbox.SetCell(x, h-1, '-', termbox.ColorDefault, termbox.ColorDefault)
+	// Draw the app name & version
+	appString := fmt.Sprintf("%s - %s", "flasher", "0.3.0") // TODO: Modify drawAll() to accept *cli.Context so this isn't hard coded
+	for index, ch := range appString {
+		termbox.SetCell(2+index, 0, ch, termbox.ColorBlack, termbox.ColorWhite)
 	}
 
 	// Draw the Stack's title
 	titleXCoord := tbutils.CalculateXCenterCoord(stack.Title)
-	tbutils.DrawText(titleXCoord, 1, stack.Title)
+	for index, ch := range stack.Title {
+		termbox.SetCell(titleXCoord+index, 0, ch, termbox.ColorBlack, termbox.ColorWhite)
+	}
 
 	// Draw the current card
 	currentQuestion := stack.getCurrentFlashcard()
