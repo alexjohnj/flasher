@@ -11,6 +11,7 @@ import (
 func main() {
 	app := cli.NewApp()
 	app.Name = "flasher"
+	app.Usage = "A simple flashcard app."
 	app.Version = "0.3.1-DEV"
 	app.Author = "Alex Jackson"
 	app.Email = "alex@alexj.org"
