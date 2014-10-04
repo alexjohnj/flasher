@@ -19,19 +19,19 @@ func main() {
 		{
 			Name:      "flash",
 			ShortName: "f",
-			Usage:     "flasher flash [flashcard-file.json]",
+			Usage:     "flasher flash [flashcard-file.toml]",
 			Action:    cliFlash,
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "no-shuffle, n",
-					Usage: "Presents flashcards in the order they are written in the source JSON file.",
+					Usage: "Presents flashcards in the order they are written in the source TOML file.",
 				},
 			},
 		},
 		{
 			Name:      "info",
 			ShortName: "i",
-			Usage:     "flasher info [flashcard-file.json]",
+			Usage:     "flasher info [flashcard-file.toml]",
 			Action:    cliInfo,
 		},
 	}
