@@ -3,13 +3,14 @@ package main
 import (
 	"fmt"
 	"github.com/alexjohnj/flasher/tbutils"
+	"github.com/codegangsta/cli"
 	"github.com/nsf/termbox-go"
 )
 
-func drawAll(stack *cardStack) {
+func drawAll(c *cli.Context, stack *cardStack) {
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 
-	drawTermboxChrome(stack)
+	drawTermboxChrome(c, stack)
 	drawCurrentCard(stack)
 
 	if stack.atEndOfStack() {
@@ -19,7 +20,7 @@ func drawAll(stack *cardStack) {
 	termbox.Flush()
 }
 
-func drawTermboxChrome(stack *cardStack) {
+func drawTermboxChrome(c *cli.Context, stack *cardStack) {
 	w, h := termbox.Size()
 
 	// Draw the border
@@ -29,7 +30,7 @@ func drawTermboxChrome(stack *cardStack) {
 	}
 
 	// Draw the app name & version
-	appString := fmt.Sprintf("%s - %s", "flasher", "0.3.0") // TODO: Modify drawAll() to accept *cli.Context so this isn't hard coded
+	appString := fmt.Sprintf("%s - %s", c.App.Name, c.App.Version)
 	tbutils.DrawRichText(2, 0, appString, termbox.ColorBlack, termbox.ColorWhite)
 
 	// Draw the Stack's title
