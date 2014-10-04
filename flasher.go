@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/alexjohnj/flasher/tbutils"
 	"github.com/codegangsta/cli"
 	"github.com/nsf/termbox-go"
 	"log"
@@ -12,7 +11,8 @@ import (
 func main() {
 	app := cli.NewApp()
 	app.Name = "flasher"
-	app.Version = "0.3.0"
+	app.Usage = "A simple flashcard app."
+	app.Version = "0.3.1"
 	app.Author = "Alex Jackson"
 	app.Email = "alex@alexj.org"
 
@@ -20,19 +20,19 @@ func main() {
 		{
 			Name:      "flash",
 			ShortName: "f",
-			Usage:     "flasher flash [flashcard-file.json]",
+			Usage:     "flasher flash [flashcard-file.toml]",
 			Action:    cliFlash,
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "no-shuffle, n",
-					Usage: "Presents flashcards in the order they are written in the source JSON file.",
+					Usage: "Presents flashcards in the order they are written in the source TOML file.",
 				},
 			},
 		},
 		{
 			Name:      "info",
 			ShortName: "i",
-			Usage:     "flasher info [flashcard-file.json]",
+			Usage:     "flasher info [flashcard-file.toml]",
 			Action:    cliInfo,
 		},
 	}
@@ -52,7 +52,11 @@ func cliFlash(c *cli.Context) {
 	err := flashcardStack.loadFlashcardStack(c.Args()[0])
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Could not load %s (Reason: %s)\n", c.Args()[0], err.Error())
+	}
+
+	if len(flashcardStack.Flashcards) < 1 {
+		log.Fatalf("Did not find any flashcards in %s!\n", c.Args()[0])
 	}
 
 	if !c.Bool("no-shuffle") {
@@ -65,7 +69,7 @@ func cliFlash(c *cli.Context) {
 		panic(err)
 	}
 	defer termbox.Close()
-	drawAll(flashcardStack)
+	drawAll(c, flashcardStack)
 
 	//Main Run loop
 mainloop:
@@ -77,10 +81,8 @@ mainloop:
 				break mainloop
 			case termbox.KeyEnter, termbox.KeyArrowRight:
 				flashcardStack.advanceStack()
-				drawAll(flashcardStack)
 			case termbox.KeyBackspace2, termbox.KeyArrowLeft:
 				flashcardStack.revertStack()
-				drawAll(flashcardStack)
 			}
 
 			switch event.Ch {
@@ -89,17 +91,14 @@ mainloop:
 
 			case 'l':
 				flashcardStack.advanceStack()
-				drawAll(flashcardStack)
 
 			case 'h':
 				flashcardStack.revertStack()
-				drawAll(flashcardStack)
 
 			case 'r':
 				if flashcardStack.atEndOfStack() {
 					flashcardStack.StackIndex = 0
 					flashcardStack.ShowAnswer = false
-					drawAll(flashcardStack)
 				}
 
 			case 'x':
@@ -107,15 +106,14 @@ mainloop:
 					flashcardStack.shuffle()
 					flashcardStack.StackIndex = 0
 					flashcardStack.ShowAnswer = false
-					drawAll(flashcardStack)
 				}
 			}
 
 		case termbox.EventResize:
-			drawAll(flashcardStack)
+			drawAll(c, flashcardStack)
 		}
 
-		drawAll(flashcardStack)
+		drawAll(c, flashcardStack)
 	}
 }
 
@@ -134,53 +132,4 @@ func cliInfo(c *cli.Context) {
 	}
 
 	fmt.Printf("Deck Name: %s\nAuthor: %s\nNumber of Cards: %d\n", flashcardStack.Title, flashcardStack.Author, len(flashcardStack.Flashcards))
-}
-
-func drawAll(stack *cardStack) {
-	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
-	w, h := termbox.Size()
-
-	// Draw termbox border
-	termbox.SetCell(0, 0, '+', termbox.ColorDefault, termbox.ColorDefault)
-	termbox.SetCell(w-1, 0, '+', termbox.ColorDefault, termbox.ColorDefault)
-	termbox.SetCell(0, h-1, '+', termbox.ColorDefault, termbox.ColorDefault)
-	termbox.SetCell(w-1, h-1, '+', termbox.ColorDefault, termbox.ColorDefault)
-
-	for x := 1; x < w-1; x++ {
-		termbox.SetCell(x, 0, '-', termbox.ColorDefault, termbox.ColorDefault)
-		termbox.SetCell(x, h-1, '-', termbox.ColorDefault, termbox.ColorDefault)
-	}
-
-	// Draw the Stack's title
-	titleXCoord := tbutils.CalculateXCenterCoord(stack.Title)
-	tbutils.DrawText(titleXCoord, 1, stack.Title)
-
-	// Draw the current card
-	currentQuestion := stack.getCurrentFlashcard()
-	currentQuestion.drawQuestion()
-	if stack.ShowAnswer {
-		currentQuestion.drawAnswer()
-		// Draw the Q/A divider
-		for x := 0; x < w; x++ {
-			termbox.SetCell(x, (3 * h / 8), '-', termbox.ColorBlue, termbox.ColorDefault)
-		}
-	}
-
-	// Draw end of stack message
-	if stack.atEndOfStack() {
-		endOfStackMessageLine1 := "End of Stack..."
-		endOfStackMessageLine2 := "(q)Quit (r)Restart (x)Reshuffle & Restart."
-		eosXCoord1, eosYCoord1 := tbutils.CalculateXCenterCoord(endOfStackMessageLine1), (3 * (h / 4))
-		eosXCoord2, eosYCoord2 := tbutils.CalculateXCenterCoord(endOfStackMessageLine2), (3*h/4)+1
-		tbutils.DrawText(eosXCoord1, eosYCoord1, endOfStackMessageLine1)
-		tbutils.DrawText(eosXCoord2, eosYCoord2, endOfStackMessageLine2)
-	}
-
-	// Draw the current index
-	indexStr := fmt.Sprintf("(%d/%d)", stack.StackIndex+1, len(stack.Flashcards))
-	indexXCoord, indexYCoord := tbutils.CalculateXCenterCoord(indexStr), h-1
-	tbutils.DrawText(indexXCoord, indexYCoord, indexStr)
-
-	// Write out the back buffer
-	termbox.Flush()
 }
