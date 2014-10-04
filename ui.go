@@ -63,8 +63,8 @@ func drawEndOfStack() {
 
 	endOfStackMessageLine1 := "End of Stack..."
 	endOfStackMessageLine2 := "(q)Quit (r)Restart (x)Reshuffle & Restart."
-	eosXCoord1, eosYCoord1 := tbutils.CalculateXCenterCoord(endOfStackMessageLine1), (3 * (h / 4))
-	eosXCoord2, eosYCoord2 := tbutils.CalculateXCenterCoord(endOfStackMessageLine2), (3*h/4)+1
+	eosXCoord1, eosYCoord1 := tbutils.CalculateXCenterCoord(endOfStackMessageLine1), 3*(h/4)
+	eosXCoord2, eosYCoord2 := tbutils.CalculateXCenterCoord(endOfStackMessageLine2), (3*(h/4))+1
 	tbutils.DrawText(eosXCoord1, eosYCoord1, endOfStackMessageLine1)
 	tbutils.DrawText(eosXCoord2, eosYCoord2, endOfStackMessageLine2)
 }
