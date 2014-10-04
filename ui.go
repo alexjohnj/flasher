@@ -30,7 +30,7 @@ func drawTermboxChrome(c *cli.Context, stack *cardStack) {
 	}
 
 	// Draw the app name & version
-	appString := fmt.Sprintf("%s - %s", c.App.Name, c.App.Version)
+	appString := fmt.Sprintf("%s %s", c.App.Name, c.App.Version)
 	tbutils.DrawRichText(2, 0, appString, termbox.ColorBlack, termbox.ColorWhite)
 
 	// Draw the Stack's title
