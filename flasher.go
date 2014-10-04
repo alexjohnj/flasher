@@ -77,10 +77,8 @@ mainloop:
 				break mainloop
 			case termbox.KeyEnter, termbox.KeyArrowRight:
 				flashcardStack.advanceStack()
-				drawAll(flashcardStack)
 			case termbox.KeyBackspace2, termbox.KeyArrowLeft:
 				flashcardStack.revertStack()
-				drawAll(flashcardStack)
 			}
 
 			switch event.Ch {
@@ -89,17 +87,14 @@ mainloop:
 
 			case 'l':
 				flashcardStack.advanceStack()
-				drawAll(flashcardStack)
 
 			case 'h':
 				flashcardStack.revertStack()
-				drawAll(flashcardStack)
 
 			case 'r':
 				if flashcardStack.atEndOfStack() {
 					flashcardStack.StackIndex = 0
 					flashcardStack.ShowAnswer = false
-					drawAll(flashcardStack)
 				}
 
 			case 'x':
@@ -107,7 +102,6 @@ mainloop:
 					flashcardStack.shuffle()
 					flashcardStack.StackIndex = 0
 					flashcardStack.ShowAnswer = false
-					drawAll(flashcardStack)
 				}
 			}
 
