@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/alexjohnj/flasher/tbutils"
 	"github.com/codegangsta/cli"
 	"github.com/nsf/termbox-go"
 	"log"
@@ -128,53 +127,4 @@ func cliInfo(c *cli.Context) {
 	}
 
 	fmt.Printf("Deck Name: %s\nAuthor: %s\nNumber of Cards: %d\n", flashcardStack.Title, flashcardStack.Author, len(flashcardStack.Flashcards))
-}
-
-// TODO: Break up mega function
-func drawAll(stack *cardStack) {
-	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
-	w, h := termbox.Size()
-
-	// Draw termbox border
-	for x := 0; x <= w; x++ {
-		termbox.SetCell(0+x, 0, ' ', termbox.ColorBlack, termbox.ColorWhite)
-		termbox.SetCell(0+x, h, ' ', termbox.ColorBlack, termbox.ColorWhite)
-	}
-
-	// Draw the app name & version
-	appString := fmt.Sprintf("%s - %s", "flasher", "0.3.0") // TODO: Modify drawAll() to accept *cli.Context so this isn't hard coded
-	tbutils.DrawRichText(2, 0, appString, termbox.ColorBlack, termbox.ColorWhite)
-
-	// Draw the Stack's title
-	titleXCoord := tbutils.CalculateXCenterCoord(stack.Title)
-	tbutils.DrawRichText(titleXCoord, 0, stack.Title, termbox.ColorBlack, termbox.ColorWhite)
-
-	// Draw the current card
-	currentQuestion := stack.getCurrentFlashcard()
-	currentQuestion.drawQuestion()
-	if stack.ShowAnswer {
-		currentQuestion.drawAnswer()
-		// Draw the Q/A divider
-		for x := 0; x < w; x++ {
-			termbox.SetCell(x, (3 * h / 8), '-', termbox.ColorBlue, termbox.ColorDefault)
-		}
-	}
-
-	// Draw end of stack message
-	if stack.atEndOfStack() {
-		endOfStackMessageLine1 := "End of Stack..."
-		endOfStackMessageLine2 := "(q)Quit (r)Restart (x)Reshuffle & Restart."
-		eosXCoord1, eosYCoord1 := tbutils.CalculateXCenterCoord(endOfStackMessageLine1), (3 * (h / 4))
-		eosXCoord2, eosYCoord2 := tbutils.CalculateXCenterCoord(endOfStackMessageLine2), (3*h/4)+1
-		tbutils.DrawText(eosXCoord1, eosYCoord1, endOfStackMessageLine1)
-		tbutils.DrawText(eosXCoord2, eosYCoord2, endOfStackMessageLine2)
-	}
-
-	// Draw the current index
-	indexStr := fmt.Sprintf("(%d/%d)", stack.StackIndex+1, len(stack.Flashcards))
-	indexXCoord, indexYCoord := tbutils.CalculateXCenterCoord(indexStr), h-1
-	tbutils.DrawText(indexXCoord, indexYCoord, indexStr)
-
-	// Write out the back buffer
-	termbox.Flush()
 }
