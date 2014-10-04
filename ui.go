@@ -26,7 +26,7 @@ func drawTermboxChrome(c *cli.Context, stack *cardStack) {
 	// Draw the border
 	for x := 0; x <= w; x++ {
 		termbox.SetCell(0+x, 0, ' ', termbox.ColorBlack, termbox.ColorWhite)
-		termbox.SetCell(0+x, h, ' ', termbox.ColorBlack, termbox.ColorWhite)
+		termbox.SetCell(0+x, h-1, ' ', termbox.ColorBlack, termbox.ColorWhite)
 	}
 
 	// Draw the app name & version
@@ -38,9 +38,10 @@ func drawTermboxChrome(c *cli.Context, stack *cardStack) {
 	tbutils.DrawRichText(titleXCoord, 0, stack.Title, termbox.ColorBlack, termbox.ColorWhite)
 
 	// Draw the current position in the stack
-	indexStr := fmt.Sprintf("(%d/%d)", stack.StackIndex+1, len(stack.Flashcards))
-	indexXCoord, indexYCoord := tbutils.CalculateXCenterCoord(indexStr), h-1
-	tbutils.DrawText(indexXCoord, indexYCoord, indexStr)
+	fractionalPosition := (float64(stack.StackIndex+1) / float64(len(stack.Flashcards))) * 100
+	indexStr := fmt.Sprintf("Card %d of %d (%.0f%%)", stack.StackIndex+1, len(stack.Flashcards), fractionalPosition)
+	indexXCoord := tbutils.CalculateXCenterCoord(indexStr)
+	tbutils.DrawRichText(indexXCoord, h-1, indexStr, termbox.ColorBlack, termbox.ColorWhite)
 }
 
 func drawCurrentCard(stack *cardStack) {
