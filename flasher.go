@@ -54,6 +54,8 @@ func cliFlash(c *cli.Context) {
 		log.Fatalf("Could not load %s (Reason: %s)\n", c.Args()[0], err.Error())
 	}
 
+	if len(flashcardStack.Flashcards) < 1 {
+		log.Fatalf("Did not find any flashcards in %s!\n", c.Args()[0])
 	}
 
 	if !c.Bool("no-shuffle") {
