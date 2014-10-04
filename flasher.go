@@ -51,7 +51,9 @@ func cliFlash(c *cli.Context) {
 	err := flashcardStack.loadFlashcardStack(c.Args()[0])
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Could not load %s (Reason: %s)\n", c.Args()[0], err.Error())
+	}
+
 	}
 
 	if !c.Bool("no-shuffle") {
