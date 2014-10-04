@@ -143,15 +143,11 @@ func drawAll(stack *cardStack) {
 
 	// Draw the app name & version
 	appString := fmt.Sprintf("%s - %s", "flasher", "0.3.0") // TODO: Modify drawAll() to accept *cli.Context so this isn't hard coded
-	for index, ch := range appString {
-		termbox.SetCell(2+index, 0, ch, termbox.ColorBlack, termbox.ColorWhite)
-	}
+	tbutils.DrawRichText(2, 0, appString, termbox.ColorBlack, termbox.ColorWhite)
 
 	// Draw the Stack's title
 	titleXCoord := tbutils.CalculateXCenterCoord(stack.Title)
-	for index, ch := range stack.Title {
-		termbox.SetCell(titleXCoord+index, 0, ch, termbox.ColorBlack, termbox.ColorWhite)
-	}
+	tbutils.DrawRichText(titleXCoord, 0, stack.Title, termbox.ColorBlack, termbox.ColorWhite)
 
 	// Draw the current card
 	currentQuestion := stack.getCurrentFlashcard()
