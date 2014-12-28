@@ -7,11 +7,12 @@ import (
 )
 
 type cardStack struct {
-	Title      string
-	Author     string
-	Flashcards []flashcard
-	ShowAnswer bool
-	StackIndex int
+	Title            string
+	Author           string
+	Flashcards       []flashcard `toml:"flashcard"`
+	LegacyFlashcards []flashcard `toml:"flashcards"`
+	ShowAnswer       bool
+	StackIndex       int
 }
 
 // advanceStack moves forward through the stack of flashcards.
@@ -59,6 +60,9 @@ func (stack *cardStack) loadFlashcardStack(filename string) error {
 	if err != nil {
 		return err
 	}
+
+	// Merge any flashcards declared with the legacy syntax
+	stack.Flashcards = append(stack.Flashcards, stack.LegacyFlashcards...)
 
 	return nil
 }
